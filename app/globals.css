@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    font-family: var(--font);
+    border: none;
+  }
+}
+
+:root {
+  --color-primary: #ffffff;
+  --color-primary-hover: #C41E3A;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #efefef;
+  --color-bg-alt: #A8D5BA;
+  --color-border: #e5e7eb;
+  --font: 'Inter', sans-serif;
+}
