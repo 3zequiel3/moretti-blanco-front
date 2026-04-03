@@ -1,23 +1,23 @@
 // lib/apiClient.ts
 import { cookies } from "next/headers";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export async function fetchAPI<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
   const headers = new Headers(options.headers);
 
-  if (!headers.has("Content-Type")) {
+  if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 
   // Lógica de Autenticación Segura con Cookies
   // Al ejecutarse en el servidor, leemos la cookie directamente.
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("mb_access_token")?.value;
 
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
@@ -35,9 +35,10 @@ export async function fetchAPI<T>(
     try {
       const errorData = await response.json();
       if (errorData.detail) {
-        errorMessage = typeof errorData.detail === 'string' 
-          ? errorData.detail 
-          : JSON.stringify(errorData.detail);
+        errorMessage =
+          typeof errorData.detail === "string"
+            ? errorData.detail
+            : JSON.stringify(errorData.detail);
       }
     } catch (e) {
       // Mantenemos el mensaje genérico si el JSON falla
