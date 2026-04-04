@@ -1,31 +1,38 @@
 // lib/apiClient.ts
-import { cookies } from "next/headers";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const BASE_URL = "/api/backend";
+
+// Construir URL absoluta para Server Components
+function getAbsoluteUrl(path: string): string {
+  // En el client, usa URL relativa
+  if (typeof window !== "undefined") {
+    return `${BASE_URL}${path}`;
+  }
+
+  // En el servidor, usa el host del frontend (no el backend)
+  // NEXT_PUBLIC_API_URL suele apuntar al backend y aqui romperia la ruta /api/backend/*
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000";
+  return `${baseUrl}${BASE_URL}${path}`;
+}
 
 export async function fetchAPI<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`;
+  const url = getAbsoluteUrl(endpoint);
   const headers = new Headers(options.headers);
 
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 
-  // Lógica de Autenticación Segura con Cookies
-  // Al ejecutarse en el servidor, leemos la cookie directamente.
-  const cookieStore = await cookies();
-  const token = cookieStore.get("mb_access_token")?.value;
-
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  // Ejecutamos la petición hacia FastAPI
+  // Cliente browser-safe: no usa next/headers.
   const response = await fetch(url, {
     ...options,
+    credentials: options.credentials ?? "include",
     headers,
   });
 

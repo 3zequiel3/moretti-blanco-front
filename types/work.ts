@@ -1,5 +1,6 @@
 export interface ImageData {
   url: string;
+  nombre?: string;
 }
 
 export interface IWork {

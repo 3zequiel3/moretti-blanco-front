@@ -1,7 +1,8 @@
 // components/public/Contact.tsx
 import Image from "next/image";
-import { Whatsapp, Instagram, Facebook } from "react-bootstrap-icons";
-import type { IContactData } from "@/types/contact"; // Asegúrate de exportar tus interfaces aquí
+import { Whatsapp, Instagram, Facebook, Linkedin } from "react-bootstrap-icons";
+import { fetchAPIServer } from "@/lib/apiClient.server";
+import type { IContactData } from "@/types/contact";
 
 // 1. Datos hardcodeados de ejemplo basados en tu interfaz
 const DUMMY_CONTACT_DATA: IContactData = {
@@ -13,6 +14,7 @@ const DUMMY_CONTACT_DATA: IContactData = {
     whatsapp: "https://wa.me/1234567890",
     instagram: "https://instagram.com/morettiblanco",
     facebook: "https://facebook.com/morettiblanco",
+    linkedin: "https://www.linkedin.com/company/morettiblanco",
   },
 };
 
@@ -21,13 +23,67 @@ type SocialConfig = {
   href: string;
 };
 
+const normalizeContactPhotoUrl = (photoUrl: string | null): string => {
+  if (!photoUrl) {
+    return "/contact/contact.jpg";
+  }
+
+  if (photoUrl.startsWith("/")) {
+    return photoUrl;
+  }
+
+  try {
+    const parsed = new URL(photoUrl);
+    if (parsed.pathname.startsWith("/uploads/")) {
+      return `/api/backend${parsed.pathname}${parsed.search}`;
+    }
+  } catch {
+    // Si no es URL valida, usamos fallback por seguridad visual.
+  }
+
+  return "/contact/contact.jpg";
+};
+
+const getContactDataWithFallback = async (): Promise<IContactData> => {
+  try {
+    const data = await fetchAPIServer<IContactData | null>("/contacto/");
+    if (!data) {
+      return DUMMY_CONTACT_DATA;
+    }
+    return {
+      ...data,
+      foto_url: normalizeContactPhotoUrl(data.foto_url),
+      links_botones: data.links_botones ?? {},
+    };
+  } catch {
+    return DUMMY_CONTACT_DATA;
+  }
+};
+
 // 2. Helpers (Se mantienen igual, solo adaptamos las clases)
 const buildSocialLinks = (
-  links: Record<string, string> | undefined
+  links: Record<string, string> | undefined,
 ): SocialConfig[] => {
   if (!links) return [];
+
+  const isSocialKey = (key: string) => {
+    const normalized = key.toLowerCase().trim();
+    return (
+      normalized.includes("whatsapp") ||
+      normalized.includes("instagram") ||
+      normalized.includes("facebook") ||
+      normalized.includes("linkedin") ||
+      normalized.includes("linkledin")
+    );
+  };
+
   return Object.entries(links)
-    .filter(([, value]) => typeof value === "string" && value.trim().length > 0)
+    .filter(
+      ([key, value]) =>
+        isSocialKey(key) &&
+        typeof value === "string" &&
+        value.trim().length > 0,
+    )
     .map(([key, value]) => ({ key, href: value.trim() }));
 };
 
@@ -36,6 +92,9 @@ const getSocialIcon = (key: string) => {
   if (normalized.includes("whatsapp")) return <Whatsapp />;
   if (normalized.includes("instagram")) return <Instagram />;
   if (normalized.includes("facebook")) return <Facebook />;
+  if (normalized.includes("linkedin") || normalized.includes("linkledin")) {
+    return <Linkedin />;
+  }
   return key.slice(0, 1).toUpperCase();
 };
 
@@ -51,21 +110,24 @@ const getSocialButtonClass = (key: string) => {
   if (normalized.includes("facebook")) {
     return "bg-[#1877F2] text-white";
   }
+  if (normalized.includes("linkedin") || normalized.includes("linkledin")) {
+    return "bg-[#0A66C2] text-white";
+  }
   return "bg-[var(--color-primary-hover)] text-white"; // Genérico
 };
 
-export const Contact = () => {
-  // Simulamos la respuesta de la API usando nuestro DUMMY DATA
-  const contactData = DUMMY_CONTACT_DATA;
+export const Contact = async () => {
+  const contactData = await getContactDataWithFallback();
   const socialLinks = buildSocialLinks(contactData?.links_botones);
 
   return (
     // Reemplaza .section
-    <section id="contact" className="w-full bg-[var(--color-bg-alt)] py-[60px] px-5 md:py-[80px] md:px-8">
-      
+    <section
+      id="contact"
+      className="w-full bg-[var(--color-bg-alt)] py-[60px] px-5 md:py-[80px] md:px-8"
+    >
       {/* Reemplaza .container */}
       <div className="mx-auto max-w-[800px] flex flex-col items-center gap-[24px] text-center md:gap-[32px]">
-        
         {/* Reemplaza .contactText */}
         <div>
           <h2 className="mb-4 text-[1.5rem] font-bold text-[var(--color-text)] md:text-[2rem]">
@@ -79,13 +141,13 @@ export const Contact = () => {
 
         {/* Reemplaza .manualContact */}
         <div className="flex w-full flex-col items-center gap-[12px]">
-          
           {/* Reemplaza .profileImage (Con Hover Effects y Next/Image) */}
           <div className="relative mb-4 md:mb-5 h-[140px] w-[140px] md:h-[180px] md:w-[180px] overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.15)] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-[0_12px_32px_rgba(196,30,58,0.2)]">
             <Image
               src={contactData?.foto_url || "https://via.placeholder.com/150"}
               alt={contactData?.nombre || "Contacto"}
               fill
+              sizes="(max-width: 768px) 140px, 180px"
               className="object-cover"
             />
           </div>
@@ -115,7 +177,6 @@ export const Contact = () => {
               </a>
             ))}
           </div>
-
         </div>
       </div>
     </section>

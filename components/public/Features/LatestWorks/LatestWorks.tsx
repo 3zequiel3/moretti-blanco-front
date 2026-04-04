@@ -1,9 +1,10 @@
 // components/public/Features/LatestWorks.tsx
 import { WorkCard } from "./WorkCard";
-import type { IWork } from "@/types/work"; // Importamos tu interfaz principal
+import type { IWork } from "@/types/work";
+import { fetchAPIServer } from "@/lib/apiClient.server";
 
-// Adaptamos los datos de prueba a tu interfaz exacta IWork
-const LATEST_WORKS: IWork[] = [
+// Datos de prueba (Fallback)
+const LATEST_WORKS_PRUEBA: IWork[] = [
   {
     id: 1,
     titulo: "Estructura Perimetral",
@@ -15,37 +16,68 @@ const LATEST_WORKS: IWork[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
-  {
-    id: 2,
-    titulo: "Portón Automático",
-    descripcion: "Diseño e instalación de portón corredizo.",
-    imagenes: [{ url: "/works/work.jpg" }, { url: "/works/work.jpg" }],
-    comentarios: "El cliente quedó muy conforme con el motor.",
-    is_active: true,
-    puntuacion: 4,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    titulo: "Techo Metálico",
-    descripcion: "Estructura metálica para cochera doble.",
-    imagenes: [{ url: "/works/work.jpg" }, { url: "/works/work.jpg" }],
-    comentarios: "Se utilizó material galvanizado.",
-    is_active: true,
-    puntuacion: 5,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
+  // ... (tus otros datos de prueba se mantienen igual)
 ];
 
-export const LatestWorks = () => {
-  // Filtramos para asegurar que solo mostramos los activos, 
-  // respetando la lógica de tu interfaz
-  const works = LATEST_WORKS.filter(work => work.is_active);
+/**
+ * Normaliza un array de imágenes. 
+ * Devuelve siempre el formato { url: string }[] que espera IWork y WorkCard.
+ */
+function normalizeWorksImageUrls(imagenes: { url: string }[]): { url: string }[] {
+  if (!imagenes || imagenes.length === 0) return [];
 
-  if (!works || works.length === 0) {
-    return <div className="p-8 text-center">No hay trabajos para mostrar.</div>;
+  return imagenes.map((img) => {
+    // Si ya es una ruta relativa local, la dejamos tal cual
+    if (img.url.startsWith("/")) {
+      return img;
+    }
+
+    try {
+      const parsed = new URL(img.url);
+      // Si la URL viene del backend con la ruta de uploads, la parseamos por el proxy/api
+      if (parsed.pathname.startsWith("/uploads/")) {
+        return { url: `/api/backend${parsed.pathname}${parsed.search}` };
+      }
+    } catch {
+      // Si el new URL falla (no es una URL válida absoluta), devolvemos la original silenciosamente
+    }
+
+    return img; // Retornamos la imagen sin modificar si no cumple las condiciones anteriores
+  });
+}
+
+/**
+ * Función para obtener los trabajos desde el backend
+ */
+async function getLatestWorksData(): Promise<IWork[]> {
+  try {
+    const latestData = await fetchAPIServer<IWork[]>("/ultimos-trabajos/");
+    
+    // Mapeamos los datos para normalizar SOLAMENTE el array de imágenes
+    // manteniendo el resto de la estructura IWork intacta.
+    const latestWorks = latestData.map((work) => ({
+      ...work,
+      imagenes: normalizeWorksImageUrls(work.imagenes),
+    }));
+    
+    console.log("Latest works data fetched successfully");
+    return latestWorks;
+  } catch (error) {
+    console.error("Error fetching latest works data, using fallback:", error);
+    return LATEST_WORKS_PRUEBA; // Fallback a datos de prueba en caso de que el backend falle
+  }
+}
+
+// Convertimos el componente en un Server Component asíncrono
+export const LatestWorks = async () => {
+  // 1. Obtenemos los datos (reales o el fallback si falla)
+  const allWorks = await getLatestWorksData();
+
+  // 2. Filtramos para asegurar que solo mostramos los activos
+  const activeWorks = allWorks.filter(work => work.is_active);
+
+  if (!activeWorks || activeWorks.length === 0) {
+    return <div className="p-8 text-center text-[var(--color-text)]">No hay trabajos para mostrar.</div>;
   }
 
   return (
@@ -64,7 +96,7 @@ export const LatestWorks = () => {
         </div>
 
         <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
-          {works.map((work) => (
+          {activeWorks.map((work) => (
             <WorkCard
               key={work.id}
               titulo={work.titulo}

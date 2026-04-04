@@ -1,10 +1,9 @@
 // components/public/Carrousel.tsx
-'use client' // Obligatorio porque Swiper necesita el navegador
+"use client"; // Obligatorio porque Swiper necesita el navegador
 
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
-
 
 import type { IBanner } from "@/types/banner";
 
@@ -15,14 +14,13 @@ type CarrouselProps = {
 export function Carrousel({ slides }: CarrouselProps) {
   // Filtramos por si acaso quieres asegurarte de que solo pasen los activos
   // (ya que vi que agregaste "is_active" a tu array de prueba)
-  const slidesActivos = slides.filter(slide => slide.is_active);
+  const slidesActivos = slides.filter((slide) => slide.is_active);
 
   if (!slidesActivos || slidesActivos.length === 0) return null;
 
   return (
     // Mantenemos tu contenedor con las medidas dinámicas de Tailwind
     <div className="relative w-full h-[clamp(260px,62vw,360px)] md:h-[clamp(320px,52vw,520px)] group">
-      
       <Swiper
         modules={[Navigation, Autoplay]}
         navigation={true}
@@ -31,24 +29,25 @@ export function Carrousel({ slides }: CarrouselProps) {
         className="w-full h-full"
         // Swiper usa variables CSS para los colores de sus flechas por defecto.
         // Aquí las forzamos a blanco y ajustamos un poco su tamaño.
-        style={{
-          "--swiper-navigation-color": "#ffffff",
-          "--swiper-navigation-size": "28px",
-        } as React.CSSProperties}
+        style={
+          {
+            "--swiper-navigation-color": "#ffffff",
+            "--swiper-navigation-size": "28px",
+          } as React.CSSProperties
+        }
       >
         {slidesActivos.map((slide, index) => (
           <SwiperSlide key={slide.id} className="relative w-full h-full">
-            
             {/* Gradiente superpuesto (se mantiene intacto tu diseño de Tailwind) */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-black/30 pointer-events-none z-10" />
 
-            {/* Imagen optimizada de Next.js */}
+            {/* Imagen con next/image */}
             <Image
               src={slide.image_url}
               alt={slide.descripcion || "Banner de trabajo"}
               fill
-              // LCP optimizado: solo la primera imagen se carga desesperadamente (priority)
-              priority={index === 0} 
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              priority={index === 0}
               className="object-cover z-0"
             />
 
@@ -58,11 +57,9 @@ export function Carrousel({ slides }: CarrouselProps) {
                 {slide.descripcion}
               </h2>
             </div>
-            
           </SwiperSlide>
         ))}
       </Swiper>
-      
     </div>
   );
 }
