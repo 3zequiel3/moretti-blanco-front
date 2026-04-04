@@ -10,6 +10,7 @@ interface ModalProps {
   onClose: () => void;
   // Si pasamos un banner, estamos editando. Si es null, estamos creando.
   bannerToEdit?: IBanner | null;
+  nextOrder: number;
   onSuccess: () => void;
 }
 
@@ -17,6 +18,7 @@ export const BannerModal = ({
   isOpen,
   onClose,
   bannerToEdit,
+  nextOrder,
   onSuccess,
 }: ModalProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -58,7 +60,11 @@ export const BannerModal = ({
 
       <div className="max-h-[min(72vh,820px)] overflow-y-auto px-6 py-6">
         {/* Le pasamos el banner al formulario para que pre-cargue los datos */}
-        <BannerForm onSuccess={onSuccess} initialData={bannerToEdit} />
+        <BannerForm
+          onSuccess={onSuccess}
+          initialData={bannerToEdit}
+          nextOrder={nextOrder}
+        />
       </div>
     </dialog>
   );

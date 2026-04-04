@@ -19,6 +19,10 @@ export default function BannersPage() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState<IBanner | null>(null);
+  const nextBannerOrder =
+    banners.length > 0
+      ? Math.max(...banners.map((banner) => banner.orden)) + 1
+      : 1;
 
   const loadBanners = async () => {
     setIsLoading(true);
@@ -173,6 +177,7 @@ export default function BannersPage() {
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
         bannerToEdit={selectedBanner}
+        nextOrder={nextBannerOrder}
         onSuccess={handleActionSuccess}
       />
       <DeleteBanner

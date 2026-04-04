@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileSelectorBanner } from "./FileSelectorBanner";
 import { fetchAPI } from "@/lib/apiClient";
 import type { IBanner } from "@/types/banner";
@@ -8,40 +8,60 @@ import type { IBanner } from "@/types/banner";
 interface BannerFormProps {
   onSuccess?: () => void;
   initialData?: IBanner | null;
+  nextOrder?: number;
 }
 
-export const BannerForm = ({ onSuccess, initialData }: BannerFormProps) => {
-  // Si hay initialData, pre-cargamos los estados
+export const BannerForm = ({
+  onSuccess,
+  initialData,
+  nextOrder = 1,
+}: BannerFormProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [descripcion, setDescripcion] = useState(
     initialData?.descripcion || "",
   );
-  const [orden, setOrden] = useState(initialData?.orden || 1);
+  const [orden, setOrden] = useState(initialData?.orden ?? nextOrder);
   const [isActive, setIsActive] = useState(
     initialData ? initialData.is_active : true,
   );
-
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState<{
     type: "error" | "success";
     msg: string;
   } | null>(null);
 
+  useEffect(() => {
+    setSelectedFile(null);
+    setDescripcion(initialData?.descripcion || "");
+    setOrden(initialData?.orden ?? nextOrder);
+    setIsActive(initialData ? initialData.is_active : true);
+    setFeedback(null);
+  }, [initialData, nextOrder]);
+
+  const hasOrderChanged = initialData ? orden !== initialData.orden : false;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
 
-    // Si es creación y no hay archivo, bloqueamos. Si es edición, el archivo es opcional.
     if (!initialData && !selectedFile) {
       return setFeedback({
         type: "error",
         msg: "Por favor selecciona una imagen.",
       });
     }
+
     if (!descripcion.trim()) {
       return setFeedback({
         type: "error",
         msg: "Por favor ingresa una descripción.",
+      });
+    }
+
+    if (!Number.isInteger(orden) || orden < 1) {
+      return setFeedback({
+        type: "error",
+        msg: "El orden debe ser un número entero mayor o igual a 1.",
       });
     }
 
@@ -54,13 +74,12 @@ export const BannerForm = ({ onSuccess, initialData }: BannerFormProps) => {
       }
       formDataToSend.append("descripcion", descripcion);
       formDataToSend.append("orden", orden.toString());
-      formDataToSend.append("is_active", String(isActive)); // Por si tu backend permite cambiar estado aquí
+      formDataToSend.append("is_active", String(isActive));
 
-      // Decidimos la ruta y el método según el modo
       const endpoint = initialData
         ? `/carrousel/${initialData.id}`
         : "/carrousel/";
-      const method = initialData ? "PATCH" : "POST"; // Ajusta a PATCH si tu backend lo requiere
+      const method = initialData ? "PATCH" : "POST";
 
       await fetchAPI<IBanner>(endpoint, {
         method,
@@ -86,7 +105,6 @@ export const BannerForm = ({ onSuccess, initialData }: BannerFormProps) => {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <label className="text-sm font-semibold text-gray-700">Imagen:</label>
-        {/* Opcional: Podrías pasarle initialData?.image_url al selector para que muestre la imagen actual */}
         <FileSelectorBanner onImageSelect={setSelectedFile} />
         {initialData && !selectedFile && (
           <p className="text-xs text-gray-500">
@@ -111,13 +129,42 @@ export const BannerForm = ({ onSuccess, initialData }: BannerFormProps) => {
           <label className="text-sm font-semibold text-gray-700">Orden:</label>
           <input
             type="number"
+            min={1}
+            step={1}
             value={orden}
-            onChange={(e) => setOrden(parseInt(e.target.value) || 1)}
+            onChange={(e) => {
+              const parsedValue = Number.parseInt(e.target.value, 10);
+              setOrden(Number.isFinite(parsedValue) ? parsedValue : 0);
+            }}
             className="w-full rounded-xl border border-gray-300 p-3 text-sm outline-none focus:border-[#be123c]"
           />
+          {initialData ? (
+            <p
+              className={`text-xs leading-relaxed ${hasOrderChanged ? "text-amber-700" : "text-gray-500"}`}
+            >
+              {hasOrderChanged ? (
+                <>
+                  El orden actual es <strong>{initialData.orden}</strong>. Si
+                  guardas con <strong>{orden}</strong>, este slide cambiará de
+                  posición.
+                </>
+              ) : (
+                <>
+                  El orden actual es <strong>{initialData.orden}</strong>. Si no
+                  lo cambias, se mantendrá en la misma posición.
+                </>
+              )}
+            </p>
+          ) : (
+            <p className="text-xs leading-relaxed text-gray-500">
+              <span>
+                Se sugiere automáticamente el siguiente orden disponible:
+              </span>
+              <strong className="ml-1">{nextOrder}</strong>.
+            </p>
+          )}
         </div>
 
-        {/* Switch básico de Estado para Edición */}
         {initialData && (
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-gray-700">
