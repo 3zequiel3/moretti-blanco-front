@@ -20,10 +20,12 @@ const LATEST_WORKS_PRUEBA: IWork[] = [
 ];
 
 /**
- * Normaliza un array de imágenes. 
+ * Normaliza un array de imágenes.
  * Devuelve siempre el formato { url: string }[] que espera IWork y WorkCard.
  */
-function normalizeWorksImageUrls(imagenes: { url: string }[]): { url: string }[] {
+function normalizeWorksImageUrls(
+  imagenes: { url: string }[],
+): { url: string }[] {
   if (!imagenes || imagenes.length === 0) return [];
 
   return imagenes.map((img) => {
@@ -51,15 +53,17 @@ function normalizeWorksImageUrls(imagenes: { url: string }[]): { url: string }[]
  */
 async function getLatestWorksData(): Promise<IWork[]> {
   try {
-    const latestData = await fetchAPIServer<IWork[]>("/ultimos-trabajos/");
-    
+    const latestData = await fetchAPIServer<IWork[]>(
+      "/ultimos-trabajos/active",
+    );
+
     // Mapeamos los datos para normalizar SOLAMENTE el array de imágenes
     // manteniendo el resto de la estructura IWork intacta.
     const latestWorks = latestData.map((work) => ({
       ...work,
       imagenes: normalizeWorksImageUrls(work.imagenes),
     }));
-    
+
     console.log("Latest works data fetched successfully");
     return latestWorks;
   } catch (error) {
@@ -74,16 +78,22 @@ export const LatestWorks = async () => {
   const allWorks = await getLatestWorksData();
 
   // 2. Filtramos para asegurar que solo mostramos los activos
-  const activeWorks = allWorks.filter(work => work.is_active);
+  const activeWorks = allWorks.filter((work) => work.is_active);
 
   if (!activeWorks || activeWorks.length === 0) {
-    return <div className="p-8 text-center text-[var(--color-text)]">No hay trabajos para mostrar.</div>;
+    return (
+      <div className="p-8 text-center text-[var(--color-text)]">
+        No hay trabajos para mostrar.
+      </div>
+    );
   }
 
   return (
-    <section id="latest-works" className="w-full bg-[var(--color-bg-secondary)] py-[40px] px-5 md:py-[60px] md:px-8">
+    <section
+      id="latest-works"
+      className="w-full bg-[var(--color-bg-secondary)] py-[40px] px-5 md:py-[60px] md:px-8"
+    >
       <div className="mx-auto max-w-[1100px]">
-        
         <div className="mb-8 text-left md:mb-12">
           <h2 className="mb-4 text-[1.5rem] font-bold text-[var(--color-text)] md:text-[1.875rem]">
             Últimos Trabajos
@@ -106,7 +116,6 @@ export const LatestWorks = async () => {
             />
           ))}
         </div>
-
       </div>
     </section>
   );
