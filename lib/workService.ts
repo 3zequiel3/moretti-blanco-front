@@ -28,10 +28,25 @@ interface DirectWorkPayload {
 }
 
 function useDirectUploadMode(): boolean {
-  return (
-    process.env.NEXT_PUBLIC_WORK_UPLOAD_MODE === "direct" ||
-    process.env.NEXT_PUBLIC_STORAGE_BACKEND === "s3"
-  );
+  const configuredMode =
+    process.env.NEXT_PUBLIC_WORK_UPLOAD_MODE?.trim().toLowerCase();
+
+  if (configuredMode === "direct") {
+    return true;
+  }
+
+  if (configuredMode === "local") {
+    return false;
+  }
+
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const hostname = window.location.hostname.toLowerCase();
+  const localHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+
+  return !localHosts.has(hostname);
 }
 
 function buildWorkFormData(payload: WorkFormPayload): FormData {
