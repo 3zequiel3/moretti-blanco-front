@@ -9,6 +9,31 @@ export interface WorkFormPayload {
   puntuacion?: number;
 }
 
+interface UploadTarget {
+  upload_url: string;
+  storage_path: string;
+  object_key: string;
+}
+
+interface DirectWorkImagePayload {
+  url: string;
+  nombre?: string;
+}
+
+interface DirectWorkPayload {
+  titulo: string;
+  descripcion: string;
+  imagenes: DirectWorkImagePayload[];
+  comentarios?: string;
+}
+
+function useDirectUploadMode(): boolean {
+  return (
+    process.env.NEXT_PUBLIC_WORK_UPLOAD_MODE === "direct" ||
+    process.env.NEXT_PUBLIC_STORAGE_BACKEND === "s3"
+  );
+}
+
 function buildWorkFormData(payload: WorkFormPayload): FormData {
   const formData = new FormData();
   formData.append("titulo", payload.titulo);
@@ -55,6 +80,77 @@ async function rateWork(
   });
 }
 
+async function presignWorkImageUpload(file: File): Promise<UploadTarget> {
+  return fetchAPI<UploadTarget>("/ultimos-trabajos/uploads/presign", {
+    method: "POST",
+    body: JSON.stringify({
+      folder: "ultimos_trabajos",
+      original_filename: file.name,
+      content_type: file.type || "application/octet-stream",
+    }),
+  });
+}
+
+async function uploadWorkImageDirect(
+  file: File,
+): Promise<DirectWorkImagePayload> {
+  const target = await presignWorkImageUpload(file);
+
+  const uploadResponse = await fetch(target.upload_url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type || "application/octet-stream",
+    },
+    body: file,
+  });
+
+  if (!uploadResponse.ok) {
+    throw new Error(`No se pudo subir ${file.name}`);
+  }
+
+  return {
+    url: target.storage_path,
+    nombre: file.name,
+  };
+}
+
+async function createWorkDirect(payload: WorkFormPayload): Promise<IWork> {
+  const images = await Promise.all(
+    payload.imagenes.map((file) => uploadWorkImageDirect(file)),
+  );
+  const directPayload: DirectWorkPayload = {
+    titulo: payload.titulo,
+    descripcion: payload.descripcion,
+    imagenes: images,
+    comentarios: payload.comentarios?.trim() || undefined,
+  };
+
+  return fetchAPI<IWork>("/ultimos-trabajos/direct", {
+    method: "POST",
+    body: JSON.stringify(directPayload),
+  });
+}
+
+async function updateWorkDirect(
+  workId: number,
+  payload: WorkFormPayload,
+): Promise<IWork> {
+  const images = await Promise.all(
+    payload.imagenes.map((file) => uploadWorkImageDirect(file)),
+  );
+  const directPayload: DirectWorkPayload = {
+    titulo: payload.titulo,
+    descripcion: payload.descripcion,
+    imagenes: images,
+    comentarios: payload.comentarios?.trim() || undefined,
+  };
+
+  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}/direct`, {
+    method: "PATCH",
+    body: JSON.stringify(directPayload),
+  });
+}
+
 export interface WorkSurveyPayload {
   puntuacion: number;
   comentarios: string;
@@ -87,6 +183,16 @@ export async function submitWorkSurvey(
 }
 
 export async function createWork(payload: WorkFormPayload): Promise<IWork> {
+  if (useDirectUploadMode()) {
+    const createdWork = await createWorkDirect(payload);
+
+    if (payload.puntuacion && payload.puntuacion !== createdWork.puntuacion) {
+      return rateWork(createdWork.id, payload.puntuacion, payload.comentarios);
+    }
+
+    return createdWork;
+  }
+
   const createdWork = await fetchAPI<IWork>("/ultimos-trabajos", {
     method: "POST",
     body: buildWorkFormData(payload),
@@ -103,6 +209,16 @@ export async function updateWork(
   workId: number,
   payload: WorkFormPayload,
 ): Promise<IWork> {
+  if (useDirectUploadMode()) {
+    const updatedWork = await updateWorkDirect(workId, payload);
+
+    if (payload.puntuacion && payload.puntuacion !== updatedWork.puntuacion) {
+      return rateWork(updatedWork.id, payload.puntuacion, payload.comentarios);
+    }
+
+    return updatedWork;
+  }
+
   const formData = buildWorkFormData(payload);
 
   const updatedWork = await fetchAPI<IWork>(`/ultimos-trabajos/${workId}`, {
