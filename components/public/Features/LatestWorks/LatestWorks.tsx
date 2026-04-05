@@ -29,7 +29,17 @@ function normalizeWorksImageUrls(
   if (!imagenes || imagenes.length === 0) return [];
 
   return imagenes.map((img) => {
-    // Si ya es una ruta relativa local, la dejamos tal cual
+    // Si ya viene proxyeada, la respetamos.
+    if (img.url.startsWith("/api/backend/")) {
+      return img;
+    }
+
+    // Si viene como ruta relativa de uploads, la pasamos por el proxy.
+    if (img.url.startsWith("/uploads/")) {
+      return { url: `/api/backend${img.url}` };
+    }
+
+    // Si es otra ruta relativa local, la dejamos tal cual.
     if (img.url.startsWith("/")) {
       return img;
     }
@@ -116,6 +126,7 @@ export const LatestWorks = async () => {
               descripcion={work.descripcion}
               imagenes={work.imagenes}
               comentarios={work.comentarios}
+              puntuacion={work.puntuacion}
             />
           ))}
         </div>

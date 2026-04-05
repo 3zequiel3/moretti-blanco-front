@@ -33,3 +33,8 @@ export interface RateWorkData {
   trabajo_id: number;
   puntuacion: number;
 }
+
+export interface WorkSurveyData {
+  puntuacion: number;
+  comentarios: string;
+}

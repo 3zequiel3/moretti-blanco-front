@@ -44,10 +44,15 @@ async function rateWork(workId: number, puntuacion: number): Promise<IWork> {
   const formData = new FormData();
   formData.append("puntuacion", String(puntuacion));
 
-  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}/rate`, {
+  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}/rank`, {
     method: "POST",
     body: formData,
   });
+}
+
+export interface WorkSurveyPayload {
+  puntuacion: number;
+  comentarios: string;
 }
 
 export async function getAllWorks(): Promise<IWork[]> {
@@ -56,6 +61,24 @@ export async function getAllWorks(): Promise<IWork[]> {
 
 export async function getActiveWorks(): Promise<IWork[]> {
   return fetchWorksList("/ultimos-trabajos/active");
+}
+
+export async function getWorkById(workId: number): Promise<IWork> {
+  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}`);
+}
+
+export async function submitWorkSurvey(
+  workId: number,
+  payload: WorkSurveyPayload,
+): Promise<IWork> {
+  const formData = new FormData();
+  formData.append("puntuacion", String(payload.puntuacion));
+  formData.append("comentarios", payload.comentarios.trim());
+
+  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}/encuesta`, {
+    method: "POST",
+    body: formData,
+  });
 }
 
 export async function createWork(payload: WorkFormPayload): Promise<IWork> {

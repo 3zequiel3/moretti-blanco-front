@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { IWork } from "@/types/work";
 import { ActionMenu, type ActionMenuItem } from "./ActionMenu";
 import { ImageCarousel } from "./ImageCarousel";
@@ -17,8 +18,33 @@ export const WorkCard = ({
   onView,
   onToggleActive,
 }: WorkCardProps) => {
+  const [copyState, setCopyState] = useState<"idle" | "ok" | "error">("idle");
   const isActive = work.is_active;
   const imageUrls = work.imagenes.map((image) => image.url);
+
+  const handleCopySurveyLink = async () => {
+    const surveyPath = `/encuesta/ultimos-trabajos/${work.id}`;
+    const surveyUrl = `${window.location.origin}${surveyPath}`;
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(surveyUrl);
+      } else {
+        const input = document.createElement("input");
+        input.value = surveyUrl;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        document.body.removeChild(input);
+      }
+
+      setCopyState("ok");
+    } catch {
+      setCopyState("error");
+    }
+
+    window.setTimeout(() => setCopyState("idle"), 1800);
+  };
 
   const actionItems: ActionMenuItem[] = [
     {
@@ -37,6 +63,11 @@ export const WorkCard = ({
       onClick: () =>
         onToggleActive?.(work.id, work.is_active ? "deactivate" : "activate"),
       variant: work.is_active ? "danger" : "default",
+    },
+    {
+      label: "Copiar link encuesta",
+      icon: "🔗",
+      onClick: handleCopySurveyLink,
     },
   ];
 
@@ -107,6 +138,16 @@ export const WorkCard = ({
               </span>
             ))}
           </div>
+
+          {copyState !== "idle" && (
+            <small
+              className={`w-full text-right text-xs font-semibold ${copyState === "ok" ? "text-emerald-600" : "text-rose-600"}`}
+            >
+              {copyState === "ok"
+                ? "Link de encuesta copiado"
+                : "No se pudo copiar el link"}
+            </small>
+          )}
         </div>
       </div>
     </article>
