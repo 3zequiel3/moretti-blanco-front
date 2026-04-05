@@ -58,22 +58,21 @@ export const WorkSurveyClient = ({ work }: WorkSurveyClientProps) => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#0f1218] px-4 py-10 text-slate-100 md:px-8 md:py-14">
-      <div className="pointer-events-none absolute inset-0 opacity-40">
-        <div className="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-[#c41e3a]/35 blur-3xl" />
-        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-[#1f2937]/70 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_45%)]" />
+    <section className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_0%_0%,rgba(196,30,58,0.12),transparent_50%),radial-gradient(circle_at_100%_100%,rgba(97,107,122,0.16),transparent_45%),var(--color-bg)] px-4 py-10 text-[var(--color-text)] md:px-8 md:py-14">
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute -top-16 -left-10 h-52 w-52 rounded-full bg-[rgba(196,30,58,0.14)] blur-3xl" />
+        <div className="absolute right-0 bottom-0 h-56 w-56 rounded-full bg-[rgba(71,85,105,0.18)] blur-3xl" />
       </div>
 
       <div className="relative mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[1.25fr_1fr]">
-        <article className="rounded-[28px] border border-white/15 bg-[#1a202b]/85 p-4 shadow-[0_30px_60px_rgba(0,0,0,0.35)] backdrop-blur-sm md:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f59aa9]">
+        <article className="rounded-[28px] border border-[var(--color-border)] bg-[linear-gradient(145deg,#ffffff_0%,#f3f6fa_90%)] p-4 shadow-[0_18px_42px_rgba(15,23,42,0.12)] md:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-primary-hover)]">
             Encuesta de satisfacción
           </p>
-          <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-4xl">
+          <h1 className="mt-2 text-2xl font-black leading-tight text-[var(--color-text)] md:text-4xl">
             {work.titulo}
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300 md:text-[15px]">
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--color-text-light)] md:text-[15px]">
             {work.descripcion}
           </p>
 
@@ -82,21 +81,21 @@ export const WorkSurveyClient = ({ work }: WorkSurveyClientProps) => {
           </div>
         </article>
 
-        <aside className="rounded-[28px] border border-[#f6bac3]/30 bg-[linear-gradient(180deg,#1a202bcc_0%,#11151ecf_100%)] p-5 shadow-[0_26px_56px_rgba(0,0,0,0.35)] backdrop-blur-sm md:p-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f6bac3]">
+        <aside className="rounded-[28px] border border-[var(--color-border-strong)] bg-[linear-gradient(160deg,#ffffff_0%,#edf2f8_100%)] p-5 shadow-[0_20px_44px_rgba(15,23,42,0.13)] md:p-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-primary-hover)]">
             Tu opinión importa
           </p>
-          <h2 className="mt-2 text-xl font-extrabold text-white md:text-2xl">
+          <h2 className="mt-2 text-xl font-extrabold text-[var(--color-text)] md:text-2xl">
             Evaluá este trabajo
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
+          <p className="mt-2 text-sm leading-6 text-[var(--color-text-light)]">
             Valorá el resultado y dejá un comentario breve para ayudarnos a
             mejorar cada proyecto.
           </p>
 
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="text-sm font-semibold text-slate-100">
+              <label className="text-sm font-semibold text-[var(--color-text)]">
                 Puntuación
               </label>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -105,7 +104,7 @@ export const WorkSurveyClient = ({ work }: WorkSurveyClientProps) => {
                     key={star}
                     type="button"
                     onClick={() => setPuntuacion(star)}
-                    className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border text-xl transition ${star <= puntuacion ? "border-[#f5a623] bg-[#f5a623] text-[#241702]" : "border-white/20 bg-white/5 text-slate-300 hover:border-white/40 hover:text-white"}`}
+                    className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border text-xl transition ${star <= puntuacion ? "border-[#f5a623] bg-[#fff2d8] text-[#b86a00] shadow-[0_4px_14px_rgba(245,166,35,0.2)]" : "border-[var(--color-border)] bg-white text-[#94a3b8] hover:border-[var(--color-border-strong)] hover:text-[#64748b]"}`}
                     aria-label={`Seleccionar ${star} estrella${star > 1 ? "s" : ""}`}
                   >
                     ★
@@ -117,7 +116,7 @@ export const WorkSurveyClient = ({ work }: WorkSurveyClientProps) => {
             <div>
               <label
                 htmlFor="comentarios"
-                className="text-sm font-semibold text-slate-100"
+                className="text-sm font-semibold text-[var(--color-text)]"
               >
                 Comentarios
               </label>
@@ -127,18 +126,18 @@ export const WorkSurveyClient = ({ work }: WorkSurveyClientProps) => {
                 onChange={(event) => setComentarios(event.target.value)}
                 placeholder="Contanos cómo fue tu experiencia con este trabajo..."
                 rows={5}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-400 focus:border-[#f6bac3] focus:ring-4 focus:ring-[#c41e3a]/30"
+                className="mt-2 w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm leading-6 text-[var(--color-text)] outline-none transition placeholder:text-[#94a3b8] focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[rgba(196,30,58,0.16)]"
               />
             </div>
 
             {error && (
-              <p className="rounded-xl border border-rose-300/35 bg-rose-500/10 px-3 py-2 text-sm text-rose-100">
+              <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
                 {error}
               </p>
             )}
 
             {success && (
-              <p className="rounded-xl border border-emerald-300/35 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
+              <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
                 {success}
               </p>
             )}
@@ -146,7 +145,7 @@ export const WorkSurveyClient = ({ work }: WorkSurveyClientProps) => {
             <button
               type="submit"
               disabled={isSubmitting || !canSubmit}
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-[linear-gradient(120deg,#c41e3a_0%,#9d1630_100%)] px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white shadow-[0_12px_30px_rgba(196,30,58,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-55"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-[linear-gradient(120deg,var(--color-primary)_0%,var(--color-primary-hover)_100%)] px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white shadow-[0_12px_28px_rgba(196,30,58,0.34)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-55"
             >
               {isSubmitting ? "Enviando..." : "Enviar evaluación"}
             </button>
