@@ -33,15 +33,6 @@ function normalizeBannerImageUrl(imageUrl: string): string {
   // Si ya es relativa/local, mantener.
   if (imageUrl.startsWith("/")) return imageUrl;
 
-  try {
-    const parsed = new URL(imageUrl);
-    if (parsed.pathname.startsWith("/uploads/")) {
-      return `/api/backend${parsed.pathname}${parsed.search}`;
-    }
-  } catch {
-    // Si no es URL valida, devolver tal como vino.
-  }
-
   return imageUrl;
 }
 
