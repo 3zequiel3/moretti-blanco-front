@@ -1,24 +1,19 @@
 import type { NextConfig } from "next";
-import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
 const isDev = process.env.NODE_ENV !== "production";
 
 function buildRemotePattern(
   rawUrl: string | undefined,
   pathname: string,
-): RemotePattern | null {
+): URL | null {
   if (!rawUrl) {
     return null;
   }
 
   try {
     const parsed = new URL(rawUrl);
-    return {
-      protocol: parsed.protocol.replace(":", "") as "http" | "https",
-      hostname: parsed.hostname,
-      port: parsed.port || "",
-      pathname,
-    };
+    parsed.pathname = pathname;
+    return parsed;
   } catch {
     return null;
   }
@@ -32,6 +27,12 @@ const backendPattern = buildRemotePattern(
 const storagePattern = buildRemotePattern(
   process.env.NEXT_PUBLIC_STORAGE_URL || process.env.BACKEND_PUBLIC_URL,
   "/**",
+);
+
+const railwayBackendPattern = buildRemotePattern(
+  process.env.NEXT_PUBLIC_RAILWAY_BACKEND_URL ||
+    "https://moretti-blanco-back-production.up.railway.app",
+  "/uploads/**",
 );
 
 const nextConfig: NextConfig = {
@@ -51,6 +52,7 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
       ...(backendPattern ? [backendPattern] : []),
+      ...(railwayBackendPattern ? [railwayBackendPattern] : []),
       ...(storagePattern ? [storagePattern] : []),
     ],
   },
