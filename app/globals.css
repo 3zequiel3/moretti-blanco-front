@@ -15,10 +15,11 @@
   }
 
   body {
-    font-family: var(--font);
+    font-family: var(--font-body), sans-serif;
     background-color: var(--color-bg);
     color: var(--color-text);
-    line-height: 1.6;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
   }
 
   a {
@@ -34,13 +35,36 @@
 }
 
 :root {
-  --color-primary: #ffffff;
-  --color-primary-hover: #C41E3A;
-  --color-text: #1f2937;
-  --color-text-light: #6b7280;
-  --color-bg: #ffffff;
-  --color-bg-secondary: #efefef;
-  --color-bg-alt: #A8D5BA;
-  --color-border: #e5e7eb;
-  --font: 'Inter', sans-serif;
+  --color-primary: #c41e3a;
+  --color-primary-hover: #a31730;
+  --color-text: #111827;
+  --color-text-light: #475569;
+  --color-bg: #f3f5f8;
+  --color-bg-secondary: #e8ecf2;
+  --color-bg-alt: #d9e0ea;
+  --color-border: #cfd7e3;
+  --color-border-strong: #b5c1d1;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: 0.01em;
+}
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-reveal {
+  animation: sectionReveal 0.7s ease both;
 }

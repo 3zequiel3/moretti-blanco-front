@@ -152,14 +152,17 @@ export const LatestWorksAdmin = () => {
 
   return (
     <section className="mx-auto grid w-full max-w-[1400px] gap-6 px-2 pb-8 pt-6 md:px-4 md:pt-8">
-      <header className="w-full overflow-hidden rounded-2xl border border-[#e6e7eb] bg-gradient-to-r from-white via-[#fff7f8] to-[#fff1f4] shadow-sm">
+      <header className="w-full overflow-hidden rounded-[26px] border border-[#e6e7eb] bg-gradient-to-r from-white via-[#fff7f8] to-[#fff1f4] shadow-sm">
         <div className="flex flex-col gap-4 px-5 py-5 md:flex-row md:items-end md:justify-between md:px-7 md:py-6">
           <div>
-            <h1 className="text-2xl font-extrabold leading-tight text-[#1f2937] md:text-[34px]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c41e3a]">
+              Administración
+            </p>
+            <h1 className="mt-1 text-2xl font-extrabold leading-tight text-[#1f2937] md:text-[34px]">
               Últimos trabajos
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#4b5563] md:text-[15px]">
-              Gestiona proyectos destacados, imágenes, rating y estado de
+              Gestioná proyectos destacados, imágenes, rating y estado de
               publicación.
             </p>
           </div>
@@ -167,32 +170,32 @@ export const LatestWorksAdmin = () => {
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 rounded-lg bg-[#c41e3a] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#a01830]"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-[#c41e3a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a01830] md:self-auto"
           >
             <PlusCircle size={18} /> Agregar trabajo
           </button>
         </div>
       </header>
 
-      <div className="flex flex-wrap gap-2 rounded-2xl border border-[#e6e7eb] bg-white p-2 shadow-sm">
+      <div className="inline-flex w-fit max-w-full flex-wrap gap-2 justify-self-start rounded-[20px] border border-[#e6e7eb] bg-white p-2 shadow-sm">
         <button
           type="button"
           onClick={() => setFilter("all")}
-          className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${filter === "all" ? "bg-slate-900 text-white shadow-sm" : "bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
+          className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${filter === "all" ? "bg-[#c41e3a] text-white shadow-sm" : "bg-[#f2f4f8] text-[#4b5563] hover:bg-[#e9edf4]"}`}
         >
           Todos ({allWorks.length})
         </button>
         <button
           type="button"
           onClick={() => setFilter("active")}
-          className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${filter === "active" ? "bg-slate-900 text-white shadow-sm" : "bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
+          className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${filter === "active" ? "bg-[#c41e3a] text-white shadow-sm" : "bg-[#f2f4f8] text-[#4b5563] hover:bg-[#e9edf4]"}`}
         >
           Activos ({activeCount})
         </button>
         <button
           type="button"
           onClick={() => setFilter("inactive")}
-          className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${filter === "inactive" ? "bg-slate-900 text-white shadow-sm" : "bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
+          className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${filter === "inactive" ? "bg-[#c41e3a] text-white shadow-sm" : "bg-[#f2f4f8] text-[#4b5563] hover:bg-[#e9edf4]"}`}
         >
           Inactivos ({inactiveCount})
         </button>

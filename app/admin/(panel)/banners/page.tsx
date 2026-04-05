@@ -66,11 +66,20 @@ export default function BannersPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] p-4 md:p-6">
-      <div className="mx-auto grid w-full max-w-[1400px] gap-6 pb-8 pt-6 md:px-4 md:pt-8">
-        <header className="w-full overflow-hidden rounded-2xl border border-[#e6e7eb] bg-gradient-to-r from-white via-[#fff7f8] to-[#fff1f4] shadow-sm">
-          <div className="flex flex-col gap-4 px-5 py-5 md:flex-row md:items-end md:justify-between md:px-7 md:py-6">
+      <div className="mx-auto w-full max-w-[1400px] px-2 pb-8 pt-6 md:px-4 md:pt-8">
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            Error: {error}
+          </div>
+        )}
+
+        <div className="overflow-hidden rounded-[26px] border border-[#e6e7eb] bg-white shadow-sm">
+          <div className="flex flex-col gap-4 border-b border-[#e6e7eb] bg-gradient-to-r from-white via-[#fff7f8] to-[#fff1f4] px-5 py-5 md:flex-row md:items-end md:justify-between md:px-7 md:py-6">
             <div>
-              <h1 className="text-2xl font-extrabold leading-tight text-[#1f2937] md:text-[34px]">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c41e3a]">
+                Administración
+              </p>
+              <h1 className="mt-1 text-2xl font-extrabold leading-tight text-[#1f2937] md:text-[34px]">
                 Gestionar banners
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#4b5563] md:text-[15px]">
@@ -81,47 +90,61 @@ export default function BannersPage() {
 
             <button
               onClick={handleOpenCreate}
-              className="flex items-center gap-2 rounded-lg bg-[#c41e3a] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#a01830]"
+              className="flex items-center gap-2 rounded-xl bg-[#c41e3a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a01830]"
             >
               <PlusCircle size={18} /> Nuevo Slide
             </button>
           </div>
-        </header>
 
-        {error && (
-          <div className="rounded bg-red-50 p-4 text-red-600">
-            Error: {error}
-          </div>
-        )}
-
-        <div className="overflow-hidden rounded-xl bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="border-b-2 border-[#c41e3a] bg-[#f0f0f0] text-[#2c2c2c]">
+            <table className="min-w-[840px] w-full text-left text-sm">
+              <thead className="border-b-2 border-[#c41e3a] bg-[#f8f9fb] text-[#2c2c2c]">
                 <tr>
-                  <th className="p-4">ID</th>
-                  <th className="p-4">Imagen</th>
-                  <th className="p-4">Descripción</th>
-                  <th className="p-4 text-center">Orden</th>
-                  <th className="p-4 text-center">Estado</th>
-                  <th className="p-4 text-center">Acciones</th>
+                  <th className="px-5 py-4 font-semibold">Imagen</th>
+                  <th className="px-5 py-4 font-semibold">Descripción</th>
+                  <th className="px-5 py-4 text-center font-semibold">Orden</th>
+                  <th className="px-5 py-4 text-center font-semibold">
+                    Estado
+                  </th>
+                  <th className="px-5 py-4 text-center font-semibold">
+                    Acciones
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e8e8e8]">
+              <tbody className="divide-y divide-[#e8e8e8] bg-white">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-gray-500">
-                      Cargando...
+                    <td
+                      colSpan={5}
+                      className="px-5 py-10 text-center text-gray-500"
+                    >
+                      Cargando banners...
+                    </td>
+                  </tr>
+                ) : banners.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-10">
+                      <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-[#e6e7eb] bg-[#fafbfc] px-5 py-8 text-center">
+                        <p className="text-lg font-semibold text-[#1f2937]">
+                          No hay banners creados
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-[#6b7280]">
+                          Creá el primer slide para publicarlo en la portada.
+                        </p>
+                        <button
+                          onClick={handleOpenCreate}
+                          className="mt-4 rounded-xl bg-[#c41e3a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a01830]"
+                        >
+                          Nuevo Slide
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ) : (
                   banners.map((item) => (
-                    <tr key={item.id} className="hover:bg-[#fafafa]">
-                      <td className="p-4 font-semibold text-[#c41e3a]">
-                        {item.id}
-                      </td>
-                      <td className="p-4">
-                        <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200">
+                    <tr key={item.id} className="transition hover:bg-[#fafafa]">
+                      <td className="px-5 py-4">
+                        <div className="relative h-16 w-16 overflow-hidden rounded-2xl border border-[#e6e7eb] bg-[#f8f9fb]">
                           <Image
                             src={item.image_url}
                             alt="slide"
@@ -131,36 +154,37 @@ export default function BannersPage() {
                           />
                         </div>
                       </td>
-                      <td className="max-w-[200px] p-4">
-                        <p className="line-clamp-2 text-gray-600">
+                      <td className="max-w-[260px] px-5 py-4">
+                        <p className="line-clamp-2 text-[#4b5563]">
                           {item.descripcion}
                         </p>
                       </td>
-                      <td className="p-4 text-center">
-                        <span className="rounded-full bg-gray-200 px-3 py-1 font-semibold">
+                      <td className="px-5 py-4 text-center">
+                        <span className="rounded-full bg-[#f2f4f8] px-3 py-1 font-semibold text-[#1f2937]">
                           {item.orden}
                         </span>
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="px-5 py-4 text-center">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${item.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${item.is_active ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}
                         >
                           {item.is_active ? "Activo" : "Inactivo"}
                         </span>
                       </td>
-                      <td className="p-4 text-center">
-                        {/* Botones de acción conectados a los estados */}
+                      <td className="px-5 py-4 text-center">
                         <button
                           onClick={() => handleOpenEdit(item)}
-                          className="p-1.5 text-gray-600 hover:text-[#c41e3a]"
+                          className="inline-flex items-center gap-2 rounded-xl border border-[#e6e7eb] bg-white px-4 py-2.5 text-sm font-semibold text-[#4b5563] transition hover:border-[#f0b8c2] hover:text-[#c41e3a]"
                         >
-                          <PencilSquare size={18} />
+                          <PencilSquare size={16} />
+                          Editar
                         </button>
                         <button
                           onClick={() => handleOpenDelete(item)}
-                          className="p-1.5 text-gray-600 hover:text-red-600"
+                          className="ml-2 inline-flex items-center gap-2 rounded-xl border border-[#f0d7dc] bg-white px-4 py-2.5 text-sm font-semibold text-[#9f1239] transition hover:border-[#ef9fb0] hover:text-[#c41e3a]"
                         >
-                          <Trash size={18} />
+                          <Trash size={16} />
+                          Eliminar
                         </button>
                       </td>
                     </tr>

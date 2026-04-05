@@ -275,13 +275,13 @@ export const Sidebar = ({
 
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-3 md:hidden">
         {mobileSubmenu === clientMenuItem.id && (
-          <div className="pointer-events-auto mb-2 rounded-2xl border border-[#d8dee6] bg-white p-2 shadow-[0_20px_30px_rgba(15,23,42,0.16)]">
+          <div className="pointer-events-auto mb-2 rounded-2xl border border-[#e6e7eb] bg-white p-2 shadow-[0_20px_30px_rgba(15,23,42,0.14)]">
             {clientMenuItem.subitems?.map((subitem) => (
               <Link
                 key={subitem.id}
                 href={subitem.path}
                 onClick={() => setMobileSubmenu(null)}
-                className={`mb-1 block rounded-xl px-4 py-2 text-sm font-semibold ${pathname === subitem.path ? "bg-[#e8f0ff] text-[#1d4ed8]" : "text-[#334155]"}`}
+                className={`mb-1 block rounded-xl px-4 py-2 text-sm font-semibold transition ${pathname === subitem.path ? "bg-[#c41e3a] text-white shadow-sm" : "text-[#4b5563] hover:bg-[#f8f9fb] hover:text-[#1f2937]"}`}
               >
                 {subitem.label}
               </Link>
@@ -289,10 +289,10 @@ export const Sidebar = ({
           </div>
         )}
 
-        <nav className="pointer-events-auto grid grid-cols-4 items-center rounded-[28px] border border-[#d8dee6] bg-[#0f5de8] px-2 py-2 text-white shadow-[0_18px_30px_rgba(15,93,232,0.38)]">
+        <nav className="pointer-events-auto grid grid-cols-3 items-center rounded-[28px] border border-[#e6e7eb] bg-white/96 px-2 py-2 text-[#4b5563] shadow-[0_18px_30px_rgba(15,23,42,0.14)] backdrop-blur-md">
           <Link
             href="/admin"
-            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold ${pathname === "/admin" ? "bg-white text-[#0f5de8]" : "text-white/90"}`}
+            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold transition ${pathname === "/admin" ? "bg-[#c41e3a] text-white shadow-sm" : "text-[#4b5563] hover:bg-[#f8f9fb] hover:text-[#1f2937]"}`}
           >
             <House size={18} />
             Inicio
@@ -305,25 +305,16 @@ export const Sidebar = ({
                 prev === clientMenuItem.id ? null : clientMenuItem.id,
               )
             }
-            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold ${clientMenuItem.subitems?.some((subitem) => subitem.path === pathname) ? "bg-white text-[#0f5de8]" : "text-white/90"}`}
+            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold transition ${clientMenuItem.subitems?.some((subitem) => subitem.path === pathname) ? "bg-[#c41e3a] text-white shadow-sm" : "text-[#4b5563] hover:bg-[#f8f9fb] hover:text-[#1f2937]"}`}
           >
             <ClientIcon size={18} />
             Sitio
           </button>
 
           <Link
-            href="/admin/latestworks"
-            onClick={() => setMobileSubmenu(null)}
-            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold ${pathname === "/admin/latestworks" ? "bg-white text-[#0f5de8]" : "text-white/90"}`}
-          >
-            <Briefcase size={18} />
-            Trabajos
-          </Link>
-
-          <Link
             href="/admin/profile"
             onClick={() => setMobileSubmenu(null)}
-            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold ${pathname === "/admin/profile" ? "bg-white text-[#0f5de8]" : "text-white/90"}`}
+            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-1 text-[11px] font-semibold transition ${pathname === "/admin/profile" ? "bg-[#c41e3a] text-white shadow-sm" : "text-[#4b5563] hover:bg-[#f8f9fb] hover:text-[#1f2937]"}`}
           >
             <Gear size={18} />
             Perfil

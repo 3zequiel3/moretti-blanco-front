@@ -12,36 +12,29 @@ type CarrouselProps = {
 };
 
 export function Carrousel({ slides }: CarrouselProps) {
-  // Filtramos por si acaso quieres asegurarte de que solo pasen los activos
-  // (ya que vi que agregaste "is_active" a tu array de prueba)
   const slidesActivos = slides.filter((slide) => slide.is_active);
 
   if (!slidesActivos || slidesActivos.length === 0) return null;
 
   return (
-    // Mantenemos tu contenedor con las medidas dinámicas de Tailwind
-    <div className="relative w-full h-[clamp(260px,62vw,360px)] md:h-[clamp(320px,52vw,520px)] group">
+    <div className="group relative h-[clamp(320px,70vw,460px)] w-full border-b border-[var(--color-border)] md:h-[clamp(420px,60vw,620px)]">
       <Swiper
         modules={[Navigation, Autoplay]}
         navigation={true}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop={true}
         className="w-full h-full"
-        // Swiper usa variables CSS para los colores de sus flechas por defecto.
-        // Aquí las forzamos a blanco y ajustamos un poco su tamaño.
         style={
           {
             "--swiper-navigation-color": "#ffffff",
-            "--swiper-navigation-size": "28px",
+            "--swiper-navigation-size": "24px",
           } as React.CSSProperties
         }
       >
         {slidesActivos.map((slide, index) => (
           <SwiperSlide key={slide.id} className="relative w-full h-full">
-            {/* Gradiente superpuesto (se mantiene intacto tu diseño de Tailwind) */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-black/30 pointer-events-none z-10" />
+            <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(95deg,rgba(2,6,23,0.74)_0%,rgba(2,6,23,0.35)_46%,rgba(2,6,23,0.62)_100%)]" />
 
-            {/* Imagen con next/image */}
             <Image
               src={slide.image_url}
               alt={slide.descripcion || "Banner de trabajo"}
@@ -51,9 +44,11 @@ export function Carrousel({ slides }: CarrouselProps) {
               className="object-cover z-0"
             />
 
-            {/* Caja de texto centrada con Blur */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/35 backdrop-blur-[2px] text-white rounded-[10px] text-center z-20 w-[min(92%,720px)] px-[clamp(10px,2vw,20px)] py-[clamp(14px,3vw,28px)]">
-              <h2 className="m-0 font-medium leading-[1.35] drop-shadow-md text-[clamp(1rem,1.5vw,1.7rem)]">
+            <div className="absolute bottom-6 left-5 z-20 w-[min(92%,760px)] rounded-[14px] border border-white/20 bg-[rgba(2,6,23,0.38)] px-4 py-4 text-white backdrop-blur-[3px] md:bottom-10 md:left-10 md:px-6 md:py-6">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#f8b6c0] md:text-xs">
+                Moretti & Blanco
+              </p>
+              <h2 className="m-0 text-[clamp(1.15rem,2.4vw,2rem)] font-semibold leading-[1.28] drop-shadow-md">
                 {slide.descripcion}
               </h2>
             </div>

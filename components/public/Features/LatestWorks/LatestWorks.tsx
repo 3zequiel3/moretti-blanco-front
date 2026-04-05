@@ -91,11 +91,14 @@ export const LatestWorks = async () => {
   return (
     <section
       id="latest-works"
-      className="w-full bg-[var(--color-bg-secondary)] py-[40px] px-5 md:py-[60px] md:px-8"
+      className="section-reveal w-full bg-[var(--color-bg-secondary)] px-5 py-[72px] md:px-8 md:py-[88px]"
     >
-      <div className="mx-auto max-w-[1100px]">
+      <div className="mx-auto max-w-[1120px]">
         <div className="mb-8 text-left md:mb-12">
-          <h2 className="mb-4 text-[1.5rem] font-bold text-[var(--color-text)] md:text-[1.875rem]">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-primary-hover)]">
+            Portfolio
+          </p>
+          <h2 className="mb-4 text-[1.6rem] font-bold text-[var(--color-text)] md:text-[2rem]">
             Últimos Trabajos
           </h2>
           <p className="m-0 max-w-[800px] text-[0.95rem] leading-[1.8] text-[var(--color-text-light)]">
@@ -105,7 +108,7 @@ export const LatestWorks = async () => {
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
+        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {activeWorks.map((work) => (
             <WorkCard
               key={work.id}

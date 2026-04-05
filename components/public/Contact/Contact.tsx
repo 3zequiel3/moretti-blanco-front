@@ -4,19 +4,21 @@ import { Whatsapp, Instagram, Facebook, Linkedin } from "react-bootstrap-icons";
 import { fetchAPIServer } from "@/lib/apiClient.server";
 import type { IContactData } from "@/types/contact";
 
-// 1. Datos hardcodeados de ejemplo basados en tu interfaz
-const DUMMY_CONTACT_DATA: IContactData = {
-  id: 1,
-  nombre: "Pablo Moretti",
-  telefono: "+54 9 261 123 4567",
-  foto_url: "/contact/contact.jpg", // Asegúrate de tener una imagen de prueba en public/contact/
-  links_botones: {
-    whatsapp: "https://wa.me/1234567890",
-    instagram: "https://instagram.com/morettiblanco",
-    facebook: "https://facebook.com/morettiblanco",
-    linkedin: "https://www.linkedin.com/company/morettiblanco",
+const DUMMY_CONTACT_DATA: IContactData[] = [
+  {
+    id: 1,
+    nombre: "Pablo Moretti",
+    cargo: "Asesor comercial",
+    telefono: "+54 9 261 123 4567",
+    foto_url: "/contact/contact.jpg",
+    links_botones: {
+      whatsapp: "https://wa.me/1234567890",
+      instagram: "https://instagram.com/morettiblanco",
+      facebook: "https://facebook.com/morettiblanco",
+      linkedin: "https://www.linkedin.com/company/morettiblanco",
+    },
   },
-};
+];
 
 type SocialConfig = {
   key: string;
@@ -44,17 +46,26 @@ const normalizeContactPhotoUrl = (photoUrl: string | null): string => {
   return "/contact/contact.jpg";
 };
 
-const getContactDataWithFallback = async (): Promise<IContactData> => {
+const normalizeContact = (contact: IContactData): IContactData => ({
+  ...contact,
+  cargo: contact.cargo || null,
+  foto_url: normalizeContactPhotoUrl(contact.foto_url),
+  links_botones: contact.links_botones ?? {},
+});
+
+const getContactDataWithFallback = async (): Promise<IContactData[]> => {
   try {
-    const data = await fetchAPIServer<IContactData | null>("/contacto/");
-    if (!data) {
-      return DUMMY_CONTACT_DATA;
+    const list = await fetchAPIServer<IContactData[]>("/contacto/list");
+    if (Array.isArray(list) && list.length > 0) {
+      return list.map(normalizeContact);
     }
-    return {
-      ...data,
-      foto_url: normalizeContactPhotoUrl(data.foto_url),
-      links_botones: data.links_botones ?? {},
-    };
+
+    const single = await fetchAPIServer<IContactData | null>("/contacto/");
+    if (single) {
+      return [normalizeContact(single)];
+    }
+
+    return DUMMY_CONTACT_DATA;
   } catch {
     return DUMMY_CONTACT_DATA;
   }
@@ -118,66 +129,87 @@ const getSocialButtonClass = (key: string) => {
 
 export const Contact = async () => {
   const contactData = await getContactDataWithFallback();
-  const socialLinks = buildSocialLinks(contactData?.links_botones);
 
   return (
-    // Reemplaza .section
     <section
       id="contact"
-      className="w-full bg-[var(--color-bg-alt)] py-[60px] px-5 md:py-[80px] md:px-8"
+      className="w-full bg-[radial-gradient(circle_at_0%_0%,rgba(196,30,58,0.12),transparent_50%),radial-gradient(circle_at_100%_100%,rgba(97,107,122,0.18),transparent_44%),var(--color-bg)] px-5 py-[72px] md:px-8 md:py-[96px]"
     >
-      {/* Reemplaza .container */}
-      <div className="mx-auto max-w-[800px] flex flex-col items-center gap-[24px] text-center md:gap-[32px]">
-        {/* Reemplaza .contactText */}
-        <div>
-          <h2 className="mb-4 text-[1.5rem] font-bold text-[var(--color-text)] md:text-[2rem]">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col items-center gap-8">
+        <div className="max-w-[760px] text-center">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-primary-hover)]">
+            Contacto
+          </p>
+          <h2 className="mb-4 text-[1.75rem] font-bold leading-tight text-[var(--color-text)] md:text-[2.25rem]">
             Contacto
           </h2>
-          <p className="m-0 text-[0.9rem] leading-[1.8] text-[var(--color-text)] md:text-[0.95rem]">
-            ¿Tienes alguna pregunta? ¡No dudes en ponerte en contacto con
-            nosotros!
+          <p className="m-0 text-[0.95rem] leading-[1.85] text-[var(--color-text-light)] md:text-[1rem]">
+            Elegí la persona indicada para tu consulta y coordiná tu proyecto.
           </p>
         </div>
 
-        {/* Reemplaza .manualContact */}
-        <div className="flex w-full flex-col items-center gap-[12px]">
-          {/* Reemplaza .profileImage (Con Hover Effects y Next/Image) */}
-          <div className="relative mb-4 md:mb-5 h-[140px] w-[140px] md:h-[180px] md:w-[180px] overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.15)] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-[0_12px_32px_rgba(196,30,58,0.2)]">
-            <Image
-              src={contactData?.foto_url || "https://via.placeholder.com/150"}
-              alt={contactData?.nombre || "Contacto"}
-              fill
-              sizes="(max-width: 768px) 140px, 180px"
-              className="object-cover"
-            />
-          </div>
+        <div className="flex w-full flex-wrap items-stretch justify-center gap-6">
+          {contactData.map((contact) => {
+            const socialLinks = buildSocialLinks(contact.links_botones);
 
-          {/* Reemplaza .personName y .phone */}
-          <h2 className="m-0 text-[1.5rem] font-semibold text-[var(--color-text)]">
-            {contactData?.nombre}
-          </h2>
-          <p className="m-0 text-[1.1rem] text-[var(--color-text)]">
-            Teléfono: {contactData?.telefono || "-"}
-          </p>
-
-          {/* Reemplaza .buttonGroup y .socialButton */}
-          <div className="mt-2 flex justify-center gap-[16px] md:gap-[24px]">
-            {socialLinks.map((link) => (
-              <a
-                key={link.key}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                // Combinamos las clases base del botón con el color dinámico
-                className={`flex h-[48px] w-[48px] md:h-[56px] md:w-[56px] items-center justify-center rounded-full text-[1.5rem] md:text-[1.8rem] no-underline shadow-sm transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] ${getSocialButtonClass(link.key)}`}
-                aria-label={link.key}
-                title={link.key}
+            return (
+              <article
+                key={contact.id}
+                className="group relative flex min-h-[490px] w-[min(86vw,325px)] overflow-hidden rounded-[22px] border border-[var(--color-border-strong)] bg-[linear-gradient(145deg,#ffffff_0%,#f2f4f8_85%)] px-6 py-7 shadow-[0_14px_40px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(15,23,42,0.18)] md:min-h-[520px]"
               >
-                {getSocialIcon(link.key)}
-              </a>
-            ))}
-          </div>
+                <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[rgba(196,30,58,0.12)] blur-2xl" />
+
+                <div className="flex h-full w-full flex-col items-center text-center">
+                  <div className="relative mt-2 h-[160px] w-[160px] overflow-hidden rounded-full border-2 border-white shadow-[0_10px_22px_rgba(15,23,42,0.18)] md:h-[176px] md:w-[176px]">
+                    <Image
+                      src={contact.foto_url || "/contact/contact.jpg"}
+                      alt={contact.nombre || "Contacto"}
+                      fill
+                      sizes="(max-width: 768px) 160px, 176px"
+                      className="object-cover"
+                    />
+                  </div>
+
+                  <div className="mt-6">
+                    <h3 className="text-[1.95rem] font-semibold text-[var(--color-text)]">
+                      {contact.nombre}
+                    </h3>
+                    {contact.cargo && (
+                      <p className="mt-2 text-[0.82rem] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary-hover)]">
+                        {contact.cargo}
+                      </p>
+                    )}
+                    <p className="mt-3 text-[1rem] text-[var(--color-text-light)]">
+                      Teléfono: {contact.telefono || "-"}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto flex w-full flex-wrap items-center justify-center gap-2.5 border-t border-[var(--color-border)] pt-5">
+                    {socialLinks.map((link) => (
+                      <a
+                        key={`${contact.id}-${link.key}`}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex h-[44px] w-[44px] items-center justify-center rounded-full text-[1.3rem] no-underline shadow-sm transition duration-200 hover:scale-105 hover:shadow-[0_6px_16px_rgba(0,0,0,0.17)] ${getSocialButtonClass(link.key)}`}
+                        aria-label={link.key}
+                        title={link.key}
+                      >
+                        {getSocialIcon(link.key)}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
+
+        {contactData.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-[var(--color-border)] bg-white/70 px-5 py-8 text-center text-sm text-[var(--color-text-light)]">
+            No hay datos de contacto para mostrar en este momento.
+          </div>
+        )}
       </div>
     </section>
   );

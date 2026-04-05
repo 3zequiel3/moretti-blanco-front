@@ -2,16 +2,20 @@
 
 type ContactNameCelProps = {
   name: string;
+  cargo: string;
   phone: string;
   onNameChange: (value: string) => void;
+  onCargoChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   disabled?: boolean;
 };
 
 export function ContactNameCel({
   name,
+  cargo,
   phone,
   onNameChange,
+  onCargoChange,
   onPhoneChange,
   disabled = false,
 }: ContactNameCelProps) {
@@ -35,6 +39,18 @@ export function ContactNameCel({
           className="w-full rounded-lg border border-[#e6e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none transition focus:border-[#c41e3a] focus:shadow-[0_0_0_3px_rgba(196,30,58,0.15)]"
           disabled={disabled}
           required
+        />
+      </label>
+
+      <label className="block space-y-1">
+        <span className="text-sm font-semibold text-[#6b7280]">Cargo</span>
+        <input
+          type="text"
+          value={cargo}
+          onChange={(event) => onCargoChange(event.target.value)}
+          placeholder="Ej: Asesor Comercial"
+          className="w-full rounded-lg border border-[#e6e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none transition focus:border-[#c41e3a] focus:shadow-[0_0_0_3px_rgba(196,30,58,0.15)]"
+          disabled={disabled}
         />
       </label>
 

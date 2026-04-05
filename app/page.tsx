@@ -8,23 +8,20 @@ import { FloatingButton } from "@/components/public/FloatingButton/FloatingButto
 
 export default function Home() {
   return (
-    // Agregamos flex y flex-col para que el Footer se comporte correctamente
-    // relative es necesario para que el botón flotante se posicione bien si usas absolute en lugar de fixed
-    <main className="flex min-h-screen flex-col bg-[color:var(--color-bg)] relative">
-      
+    <main className="relative flex min-h-screen flex-col bg-[color:var(--color-bg)]">
+      <div className="pointer-events-none absolute inset-0 opacity-45 [background-image:linear-gradient(to_right,rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px]" />
+
       <Navbar />
-      
-      {/* Contenido principal (crecerá ocupando el espacio disponible) */}
-      <div className="flex-1">
+
+      <div className="relative z-10 flex-1">
         <Banner />
         <Features />
         <Contact />
       </div>
 
       <Footer />
-      
-      <FloatingButton />
 
+      <FloatingButton />
     </main>
   );
 }

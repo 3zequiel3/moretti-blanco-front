@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Barlow, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const barlowDisplay = Barlow({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: "MB - Cierres Perimetrales y Metalúrgica",
-  description: "Nos dedicamos a la fabricación e instalación de cierres perimetrales, rejas, portones, estructuras metálicas y trabajos de herrería en general. Con más de 5 años de experiencia, ofrecemos soluciones personalizadas para cada proyecto, garantizando calidad, seguridad y durabilidad. Contáctanos para transformar tus espacios con nuestros servicios de metalúrgica.",
+  description:
+    "Nos dedicamos a la fabricación e instalación de cierres perimetrales, rejas, portones, estructuras metálicas y trabajos de herrería en general. Con más de 5 años de experiencia, ofrecemos soluciones personalizadas para cada proyecto, garantizando calidad, seguridad y durabilidad. Contáctanos para transformar tus espacios con nuestros servicios de metalúrgica.",
 };
 
 export default function RootLayout({
@@ -24,11 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased` }
+      lang="es"
+      className={`${barlowDisplay.variable} ${ibmPlexSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col" suppressHydrationWarning>{children}</body>
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }
