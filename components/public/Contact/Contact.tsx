@@ -39,6 +39,9 @@ const normalizeContactPhotoUrl = (photoUrl: string | null): string => {
     if (parsed.pathname.startsWith("/uploads/")) {
       return `/api/backend${parsed.pathname}${parsed.search}`;
     }
+
+    // Para Railway S3 privado usamos URLs presignadas absolutas.
+    return photoUrl;
   } catch {
     // Si no es URL valida, usamos fallback por seguridad visual.
   }

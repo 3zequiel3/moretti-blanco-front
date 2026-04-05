@@ -25,7 +25,7 @@ const backendPattern = buildRemotePattern(
 );
 
 const storagePattern = buildRemotePattern(
-  process.env.NEXT_PUBLIC_STORAGE_URL || process.env.BACKEND_PUBLIC_URL,
+  process.env.NEXT_PUBLIC_STORAGE_URL || "https://t3.storageapi.dev",
   "/**",
 );
 
