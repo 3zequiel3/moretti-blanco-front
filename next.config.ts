@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
+import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-function buildRemotePattern(rawUrl: string | undefined, pathname: string) {
+function buildRemotePattern(
+  rawUrl: string | undefined,
+  pathname: string,
+): RemotePattern | null {
   if (!rawUrl) {
     return null;
   }
@@ -10,7 +14,7 @@ function buildRemotePattern(rawUrl: string | undefined, pathname: string) {
   try {
     const parsed = new URL(rawUrl);
     return {
-      protocol: parsed.protocol.replace(":", ""),
+      protocol: parsed.protocol.replace(":", "") as "http" | "https",
       hostname: parsed.hostname,
       port: parsed.port || "",
       pathname,
