@@ -47,7 +47,7 @@ function normalizeBannerImageUrl(imageUrl: string): string {
 
 async function getBannerData(): Promise<IBanner[]> {
   try {
-    const bannerData = await fetchAPIServer<IBanner[]>("/carrousel/");
+    const bannerData = await fetchAPIServer<IBanner[]>("/carrousel");
     const normalizedBanners = bannerData.map((banner) => ({
       ...banner,
       image_url: normalizeBannerImageUrl(banner.image_url),

@@ -60,7 +60,7 @@ const getContactDataWithFallback = async (): Promise<IContactData[]> => {
       return list.map(normalizeContact);
     }
 
-    const single = await fetchAPIServer<IContactData | null>("/contacto/");
+    const single = await fetchAPIServer<IContactData | null>("/contacto");
     if (single) {
       return [normalizeContact(single)];
     }

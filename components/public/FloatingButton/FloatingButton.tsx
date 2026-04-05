@@ -79,7 +79,7 @@ export const FloatingButton = () => {
   useEffect(() => {
     const loadFloatingLink = async () => {
       try {
-        const data = await fetchAPI<IContactData | null>("/contacto/");
+        const data = await fetchAPI<IContactData | null>("/contacto");
         setFloatingLink(resolveFloatingLink(data?.links_botones));
       } catch {
         setFloatingLink(DUMMY_WHATSAPP_LINK);

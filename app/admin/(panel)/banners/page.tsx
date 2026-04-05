@@ -27,7 +27,7 @@ export default function BannersPage() {
   const loadBanners = async () => {
     setIsLoading(true);
     try {
-      const data = await fetchAPI<IBanner[]>("/carrousel/");
+      const data = await fetchAPI<IBanner[]>("/carrousel");
       setBanners(data);
     } catch (e: any) {
       setError(e.message);

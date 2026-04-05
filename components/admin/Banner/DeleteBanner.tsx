@@ -45,8 +45,9 @@ export const DeleteBanner = ({
     setError(null);
 
     try {
-      // Nuestro apiClient maneja las respuestas 204 (No Content) automáticamente
-      await fetchAPI(`/carrousel/${bannerToDelete.id}`, { method: "DELETE" });
+      await fetchAPI(`/carrousel/${bannerToDelete.id}/deactivate`, {
+        method: "POST",
+      });
       onSuccess();
     } catch (err: any) {
       setError(err.message || "Error al intentar eliminar.");

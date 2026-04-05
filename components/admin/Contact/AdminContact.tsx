@@ -10,7 +10,7 @@ async function getContactDataList(): Promise<IContactData[]> {
   try {
     return await fetchAPI<IContactData[]>("/contacto/list");
   } catch {
-    const single = await fetchAPI<IContactData | null>("/contacto/");
+    const single = await fetchAPI<IContactData | null>("/contacto");
     return single ? [single] : [];
   }
 }
@@ -27,7 +27,7 @@ async function createContactData(payload: ContactFormPayload): Promise<void> {
   body.append("file", payload.file);
   body.append("links_botones", JSON.stringify(payload.links_botones));
 
-  await fetchAPI<IContactData>("/contacto/", {
+  await fetchAPI<IContactData>("/contacto", {
     method: "POST",
     body,
   });

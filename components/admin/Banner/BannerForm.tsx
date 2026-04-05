@@ -78,7 +78,7 @@ export const BannerForm = ({
 
       const endpoint = initialData
         ? `/carrousel/${initialData.id}`
-        : "/carrousel/";
+        : "/carrousel";
       const method = initialData ? "PATCH" : "POST";
 
       await fetchAPI<IBanner>(endpoint, {

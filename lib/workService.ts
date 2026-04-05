@@ -40,11 +40,16 @@ async function fetchWorksList(endpoint: string): Promise<IWork[]> {
   }
 }
 
-async function rateWork(workId: number, puntuacion: number): Promise<IWork> {
+async function rateWork(
+  workId: number,
+  puntuacion: number,
+  comentarios?: string,
+): Promise<IWork> {
   const formData = new FormData();
   formData.append("puntuacion", String(puntuacion));
+  formData.append("comentarios", comentarios?.trim() || "Sin comentarios");
 
-  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}/rank`, {
+  return fetchAPI<IWork>(`/ultimos-trabajos/${workId}/encuesta`, {
     method: "POST",
     body: formData,
   });
@@ -82,13 +87,13 @@ export async function submitWorkSurvey(
 }
 
 export async function createWork(payload: WorkFormPayload): Promise<IWork> {
-  const createdWork = await fetchAPI<IWork>("/ultimos-trabajos/", {
+  const createdWork = await fetchAPI<IWork>("/ultimos-trabajos", {
     method: "POST",
     body: buildWorkFormData(payload),
   });
 
   if (payload.puntuacion && payload.puntuacion !== createdWork.puntuacion) {
-    return rateWork(createdWork.id, payload.puntuacion);
+    return rateWork(createdWork.id, payload.puntuacion, payload.comentarios);
   }
 
   return createdWork;
@@ -106,7 +111,7 @@ export async function updateWork(
   });
 
   if (payload.puntuacion && payload.puntuacion !== updatedWork.puntuacion) {
-    return rateWork(updatedWork.id, payload.puntuacion);
+    return rateWork(updatedWork.id, payload.puntuacion, payload.comentarios);
   }
 
   return updatedWork;
