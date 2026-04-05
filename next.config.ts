@@ -12,7 +12,7 @@ function buildRemotePattern(rawUrl: string | undefined, pathname: string) {
     return {
       protocol: parsed.protocol.replace(":", ""),
       hostname: parsed.hostname,
-      port: parsed.port,
+      port: parsed.port || "",
       pathname,
     };
   } catch {
